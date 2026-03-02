@@ -7,7 +7,11 @@ import Sidebar from "@/components/Sidebar";
 import MapPicker from "@/components/MapPicker";
 import { toast } from "react-toastify";
 
-const TABS = ["Field Survey", "Community Report", "Bulk CSV"];
+const TABS = [
+    { label: "🦅  Field Survey", desc: "Report direct species observations" },
+    { label: "🌿  Community Report", desc: "Document an ecological community" },
+    { label: "📂  Bulk CSV Upload", desc: "Upload multiple records at once" },
+];
 
 export default function ReportPage() {
     const [tab, setTab] = useState(0);
@@ -67,34 +71,50 @@ export default function ReportPage() {
             <div className="app-shell">
                 <Sidebar />
                 <div className="main-content">
-                    <div style={{ padding: "28px" }}>
-                        <div className="page-header">
-                            <div>
-                                <h1 className="page-title">Submit Species Report</h1>
-                                <p className="page-subtitle">Document biodiversity observations in the field</p>
-                            </div>
+                    <div className="topbar">
+                        <div>
+                            <div className="topbar-title">Submit Species Report</div>
+                            <div className="topbar-subtitle">Document biodiversity observations in the field</div>
                         </div>
+                    </div>
 
+                    <div className="page-wrapper">
+                        {/* Tab Switcher */}
                         <div className="tabs">
                             {TABS.map((t, i) => (
-                                <button key={t} className={`tab-btn ${tab === i ? "active" : ""}`} onClick={() => setTab(i)}>{t}</button>
+                                <button key={t.label} className={`tab-btn ${tab === i ? "active" : ""}`} onClick={() => setTab(i)}>
+                                    {t.label}
+                                </button>
                             ))}
                         </div>
 
+                        {/* Tab Description */}
+                        <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 22, marginTop: -14 }}>
+                            {TABS[tab].desc}
+                        </p>
+
+                        {/* Field Survey & Community Report */}
                         {(tab === 0 || tab === 1) && (
                             <form onSubmit={submitFieldSurvey}>
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-                                    <div>
+                                    {/* Left: Form Fields */}
+                                    <div className="card">
+                                        <div className="section-label" style={{ marginBottom: 20 }}>
+                                            <span className="section-label-text">Observation Details</span>
+                                        </div>
+
                                         <div className="form-group">
                                             <label className="form-label">Species Name *</label>
                                             <input className="form-input" required value={form.speciesName} onChange={set("speciesName")} placeholder="e.g. Bengal Tiger, Indian Peafowl" />
                                         </div>
+
                                         {tab === 0 && (
                                             <div className="form-group">
-                                                <label className="form-label">Survey Name</label>
+                                                <label className="form-label">Survey Name <span className="form-hint">(optional)</span></label>
                                                 <input className="form-input" value={form.surveyName} onChange={set("surveyName")} placeholder="Optional survey identifier" />
                                             </div>
                                         )}
+
                                         <div className="grid-2">
                                             <div className="form-group">
                                                 <label className="form-label">Habitat Type</label>
@@ -109,6 +129,7 @@ export default function ReportPage() {
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div className="grid-2">
                                             <div className="form-group">
                                                 <label className="form-label">No. of Individuals</label>
@@ -121,6 +142,7 @@ export default function ReportPage() {
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div className="grid-2">
                                             <div className="form-group">
                                                 <label className="form-label">Weather</label>
@@ -133,46 +155,82 @@ export default function ReportPage() {
                                                 <input className="form-input" value={form.regionName} onChange={set("regionName")} placeholder="e.g. Sundarbans" />
                                             </div>
                                         </div>
+
                                         <div className="form-group">
                                             <label className="form-label">Description</label>
                                             <textarea className="form-textarea" value={form.description} onChange={set("description") as any} placeholder="Additional observations, behavior notes..." />
                                         </div>
+
                                         <div className="form-group">
-                                            <label className="form-label">Photo <span style={{ color: "#9ca3af", fontWeight: 400 }}>(optional, max 5MB)</span></label>
-                                            <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)}
-                                                style={{ fontSize: 13, color: "#374151" }} />
+                                            <label className="form-label">Photo <span className="form-hint">(optional, max 5MB)</span></label>
+                                            <div className="file-input-wrap" style={{ position: "relative" }}>
+                                                <div style={{ fontSize: 28, marginBottom: 6 }}>📷</div>
+                                                <div style={{ fontSize: 13, color: "#6b7280" }}>
+                                                    {image ? image.name : "Click to choose a photo"}
+                                                </div>
+                                                <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} />
+                                            </div>
                                         </div>
-                                        <button className="btn btn-primary btn-lg" type="submit" disabled={loading || !coords}>
-                                            {loading ? <><span className="spinner" /> Submitting...</> : "Submit Report"}
+
+                                        <button className="btn btn-primary btn-lg" type="submit" disabled={loading || !coords} style={{ marginTop: 4 }}>
+                                            {loading ? <><span className="spinner" /> Submitting...</> : "Submit Report →"}
                                         </button>
+                                        {!coords && (
+                                            <p style={{ fontSize: 12, color: "#f59e0b", marginTop: 8, display: "flex", alignItems: "center", gap: 5 }}>
+                                                ⚠ Please select a location on the map to submit
+                                            </p>
+                                        )}
                                     </div>
 
-                                    <div>
-                                        <div className="form-group">
-                                            <label className="form-label">Location * <span style={{ color: "#9ca3af", fontWeight: 400 }}>Click map to select</span></label>
-                                            <MapPicker onLocationSelect={(lat, lng) => setCoords({ lat, lng })} />
+                                    {/* Right: Map */}
+                                    <div className="card">
+                                        <div className="section-label" style={{ marginBottom: 20 }}>
+                                            <span className="section-label-text">Pin Location *</span>
                                         </div>
+                                        <p style={{ fontSize: 12.5, color: "#6b7280", marginBottom: 14, marginTop: -10 }}>
+                                            Click on the map to select the observation location
+                                        </p>
+                                        <MapPicker onLocationSelect={(lat, lng) => setCoords({ lat, lng })} />
+                                        {coords && (
+                                            <div style={{ marginTop: 12, padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, fontSize: 12.5, color: "#15803d", border: "1px solid #bbf7d0" }}>
+                                                ✅ Location selected: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </form>
                         )}
 
+                        {/* Bulk CSV */}
                         {tab === 2 && (
-                            <div className="card" style={{ maxWidth: 540 }}>
-                                <h3 style={{ marginTop: 0, fontSize: 15, fontWeight: 700, color: "#111827" }}>Bulk CSV Upload</h3>
-                                <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>
-                                    Upload a CSV file with columns: <code>speciesName, lat, lng, region, habitatType, observationType, numberOfIndividuals, riskLevel, description, surveyName</code>
-                                </p>
-                                <form onSubmit={submitCsv}>
-                                    <div className="form-group">
-                                        <label className="form-label">CSV File *</label>
-                                        <input type="file" accept=".csv" required onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                                            style={{ fontSize: 13, color: "#374151" }} />
+                            <div style={{ maxWidth: 580 }}>
+                                <div className="card">
+                                    <div className="section-label" style={{ marginBottom: 20 }}>
+                                        <span className="section-label-text">CSV Upload</span>
                                     </div>
-                                    <button className="btn btn-primary" type="submit" disabled={loading || !csvFile}>
-                                        {loading ? <><span className="spinner" /> Uploading...</> : "Upload CSV"}
-                                    </button>
-                                </form>
+                                    <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, padding: "14px 16px", marginBottom: 20, fontSize: 13, color: "#92400e" }}>
+                                        <strong>Required columns:</strong>{" "}
+                                        <code style={{ fontSize: 11.5, background: "rgba(0,0,0,0.04)", padding: "2px 5px", borderRadius: 4 }}>
+                                            speciesName, lat, lng, region, habitatType, observationType, numberOfIndividuals, riskLevel, description, surveyName
+                                        </code>
+                                    </div>
+                                    <form onSubmit={submitCsv}>
+                                        <div className="form-group">
+                                            <label className="form-label">CSV File *</label>
+                                            <div className="file-input-wrap" style={{ position: "relative" }}>
+                                                <div style={{ fontSize: 32, marginBottom: 8 }}>📂</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 4 }}>
+                                                    {csvFile ? csvFile.name : "Drop your CSV file here"}
+                                                </div>
+                                                <div style={{ fontSize: 12, color: "#9ca3af" }}>or click to browse</div>
+                                                <input type="file" accept=".csv" required onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
+                                            </div>
+                                        </div>
+                                        <button className="btn btn-primary btn-lg" type="submit" disabled={loading || !csvFile}>
+                                            {loading ? <><span className="spinner" /> Uploading...</> : "Upload CSV →"}
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         )}
                     </div>

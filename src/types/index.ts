@@ -2,7 +2,7 @@ export interface User {
     _id: string;
     name: string;
     email: string;
-    role: "user" | "researcher" | "admin";
+    role: "user" | "officer" | "admin";
     organization?: string;
     bio?: string;
     profileImage?: string | null;
@@ -114,4 +114,23 @@ export interface PaginatedResponse<T> {
     total: number;
     page: number;
     pages: number;
+}
+
+export interface Document {
+    _id: string;
+    title: string;
+    description?: string;
+    fileUrl: string;
+    fileName: string;
+    fileType: "pdf" | "csv" | "image" | "doc" | "other";
+    mimeType?: string;
+    fileSize?: number;
+    uploadedBy: { _id: string; name: string; email: string; role: string };
+    status: "pending" | "approved" | "rejected";
+    adminNote?: string;
+    approvedBy?: { _id: string; name: string } | null;
+    approvedAt?: string | null;
+    tags?: string[];
+    createdAt: string;
+    updatedAt: string;
 }

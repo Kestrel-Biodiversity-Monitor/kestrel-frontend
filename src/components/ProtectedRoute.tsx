@@ -6,7 +6,7 @@ import { useEffect, ReactNode } from "react";
 
 interface Props {
     children: ReactNode;
-    requiredRole?: "admin" | "researcher";
+    requiredRole?: "admin" | "officer" | "researcher";
 }
 
 export default function ProtectedRoute({ children, requiredRole }: Props) {
