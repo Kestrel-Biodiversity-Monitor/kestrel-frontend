@@ -7,49 +7,20 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Sidebar";
 import { toast } from "react-toastify";
 
-// Dynamically import map component to avoid SSR issues
-const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
-const useMap = dynamic(() => import("react-leaflet").then((mod) => mod.useMap), { ssr: false });
-
 interface HeatmapData {
     count: number;
     data: [number, number, number][]; // [lat, lng, intensity]
 }
 
-// HeatLayer component
-function HeatLayer({ points }: { points: [number, number, number][] }) {
-    const map = useMap();
-
-    useEffect(() => {
-        if (!map || points.length === 0) return;
-
-        // Dynamically import leaflet.heat
-        import("leaflet.heat").then((L) => {
-            // Remove existing heat layer
-            map.eachLayer((layer: any) => {
-                if (layer._heat) map.removeLayer(layer);
-            });
-
-            // Add new heat layer
-            const heat = (L as any).heatLayer(points, {
-                radius: 25,
-                blur: 15,
-                maxZoom: 10,
-                max: 1.0,
-                gradient: {
-                    0.0: "#0000ff",
-                    0.3: "#00ff00",
-                    0.6: "#ffff00",
-                    1.0: "#ff0000",
-                },
-            });
-            heat.addTo(map);
-        });
-    }, [map, points]);
-
-    return null;
-}
+// Dynamically import the entire map component to avoid SSR issues
+const HeatmapMap = dynamic(() => import("@/components/HeatmapMap"), { 
+    ssr: false,
+    loading: () => (
+        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <p style={{ color: "#6b7280" }}>Loading map...</p>
+        </div>
+    ),
+});
 
 const RISK_LEVELS = ["Low", "Medium", "High", "Critical"];
 
@@ -60,43 +31,13 @@ export default function HeatmapPage() {
     const [endDate, setEndDate] = useState("");
     const [species, setSpecies] = useState("");
     const [riskLevel, setRiskLevel] = useState("");
-    const [center] = useState<[number, number]>([20, 0]); // Default world center
-    const [zoom] = useState(2);
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-        loadHeatmap();
-    }, []);
 
     const loadHeatmap = async () => {
         setLoading(true);
         try {
             const params: any = {};
             if (startDate) params.startDate = startDate;
-      
-
-    // Prevent SSR render of map
-    if (!isMounted) {
-        return (
-            <ProtectedRoute>
-                <div className="app-shell">
-                    <Sidebar />
-                    <div className="main-content">
-                        <div className="topbar">
-                            <div>
-                                <div className="topbar-title">🗺️ Species Heatmap</div>
-                                <div className="topbar-subtitle">Interactive geographical distribution visualization</div>
-                            </div>
-                        </div>
-                        <div className="page-wrapper" style={{ padding: 0, height: "calc(100vh - 70px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <p style={{ color: "#6b7280" }}>Loading map...</p>
-                        </div>
-                    </div>
-                </div>
-            </ProtectedRoute>
-        );
-    }      if (endDate) params.endDate = endDate;
+            if (endDate) params.endDate = endDate;
             if (species) params.species = species;
             if (riskLevel) params.riskLevel = riskLevel;
 
@@ -108,6 +49,17 @@ export default function HeatmapPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        loadHeatmap();
+    }, []);
+
+    const resetFilters = () => {
+        setStartDate("");
+        setEndDate("");
+        setSpecies("");
+        setRiskLevel("");
     };
 
     return (
@@ -166,18 +118,7 @@ export default function HeatmapPage() {
 
                         {/* Map Container */}
                         <div style={{ width: "100%", height: "100%" }}>
-                            <MapContainer
-                                center={center}
-                                zoom={zoom}
-                                scrollWheelZoom={true}
-                                style={{ width: "100%", height: "100%" }}
-                            >
-                                <TileLayer
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                {heatmapData.data.length > 0 && <HeatLayer points={heatmapData.data} />}
-                            </MapContainer>
+                            <HeatmapMap points={heatmapData.data} />
                         </div>
                     </div>
                 </div>

@@ -31,7 +31,8 @@ interface Document {
 
 const GROQ_MODELS = [
     { id: "llama-3.1-8b-instant", name: "LLaMA 3.1 8B (Fastest)", context: "8K context" },
-    { id: "llama-3.3-70b-versatile", name: "LLaMA 3.3 70B (Best)", context: "8K context" },
+    { id: "llama-3.1-70b-versatile", name: "LLaMA 3.1 70B (Best)", context: "8K context" },
+    { id: "llama3-8b-8192", name: "LLaMA 3 8B", context: "8K context" },
     { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", context: "32K context" },
     { id: "gemma2-9b-it", name: "Gemma 2 9B", context: "8K context" },
 ];
