@@ -29,12 +29,12 @@ interface Document {
     createdAt: string;
 }
 
+// Official Groq Production Models (March 2026)
 const GROQ_MODELS = [
-    { id: "llama-3.1-8b-instant", name: "LLaMA 3.1 8B (Fastest)", context: "8K context" },
-    { id: "llama-3.1-70b-versatile", name: "LLaMA 3.1 70B (Best)", context: "8K context" },
-    { id: "llama3-8b-8192", name: "LLaMA 3 8B", context: "8K context" },
-    { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", context: "32K context" },
-    { id: "gemma2-9b-it", name: "Gemma 2 9B", context: "8K context" },
+    { id: "llama-3.1-8b-instant", name: "LLaMA 3.1 8B", context: "131K context • 560 T/s • Fast & Affordable" },
+    { id: "llama-3.3-70b-versatile", name: "LLaMA 3.3 70B", context: "131K context • 280 T/s • Best Quality" },
+    { id: "openai/gpt-oss-120b", name: "OpenAI GPT-OSS 120B", context: "131K context • 500 T/s • Flagship Model" },
+    { id: "openai/gpt-oss-20b", name: "OpenAI GPT-OSS 20B", context: "131K context • 1000 T/s • Fastest" },
 ];
 
 export default function LLMPage() {
