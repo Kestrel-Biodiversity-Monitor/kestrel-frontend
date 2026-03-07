@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* Fonts loaded via layout.tsx <head> link tags (Inter + Plus Jakarta Sans) */
 

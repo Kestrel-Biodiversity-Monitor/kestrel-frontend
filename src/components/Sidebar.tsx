@@ -132,6 +132,7 @@ const NAV = [
     { href: "/conservation", icon: ExtraIcons.conservation, label: "Conservation Zones", roles: ["officer", "admin"] },
     { href: "/documents", icon: ExtraIcons.document, label: "Documents", roles: ["user", "officer", "admin"] },
     { href: "/analytics", icon: Icons.analytics, label: "Analytics", roles: ["user", "officer", "admin"] },
+    { href: "/heatmap", icon: ExtraIcons.map, label: "🗺️ Heatmap", roles: ["user", "officer", "admin"] },
     { href: "/ai", icon: ExtraIcons.ai, label: "🤖 AI Assistant", roles: ["user", "officer", "admin"] },
     { href: "/forum", icon: Icons.forum, label: "Community", roles: ["user", "officer", "admin"] },
     { href: "/notifications", icon: ExtraIcons.notification, label: "Notifications", roles: ["user", "officer", "admin"] },
