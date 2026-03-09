@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 
 interface HeatmapMapProps {
   points: [number, number, number][]; // [lat, lng, intensity]
+  onZoomChange?: (zoom: number) => void;
 }
 
 // HeatLayer component
@@ -42,7 +43,32 @@ function HeatLayer({ points }: { points: [number, number, number][] }) {
   return null;
 }
 
-export default function HeatmapMap({ points }: HeatmapMapProps) {
+// ZoomListener component
+function ZoomListener({ onZoomChange }: { onZoomChange?: (zoom: number) => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map || !onZoomChange) return;
+
+    const handleZoomEnd = () => {
+      const currentZoom = map.getZoom();
+      onZoomChange(currentZoom);
+    };
+
+    map.on("zoomend", handleZoomEnd);
+
+    // Initial zoom
+    onZoomChange(map.getZoom());
+
+    return () => {
+      map.off("zoomend", handleZoomEnd);
+    };
+  }, [map, onZoomChange]);
+
+  return null;
+}
+
+export default function HeatmapMap({ points, onZoomChange }: HeatmapMapProps) {
   return (
     <MapContainer
       center={[20, 0]}
@@ -55,6 +81,7 @@ export default function HeatmapMap({ points }: HeatmapMapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {points.length > 0 && <HeatLayer points={points} />}
+      <ZoomListener onZoomChange={onZoomChange} />
     </MapContainer>
   );
 }

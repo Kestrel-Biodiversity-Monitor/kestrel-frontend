@@ -9,6 +9,10 @@ import { toast } from "react-toastify";
 
 interface HeatmapData {
     count: number;
+    gridCount?: number;
+    precision?: number;
+    zoom?: number;
+    aggregated?: boolean;
     data: [number, number, number][]; // [lat, lng, intensity]
 }
 
@@ -31,11 +35,13 @@ export default function HeatmapPage() {
     const [endDate, setEndDate] = useState("");
     const [species, setSpecies] = useState("");
     const [riskLevel, setRiskLevel] = useState("");
+    const [currentZoom, setCurrentZoom] = useState(2); // Track map zoom
 
-    const loadHeatmap = async () => {
+    const loadHeatmap = async (zoom?: number) => {
         setLoading(true);
         try {
-            const params: any = {};
+            const zoomToUse = zoom !== undefined ? zoom : currentZoom;
+            const params: any = { zoom: zoomToUse }; // Pass zoom to backend
             if (startDate) params.startDate = startDate;
             if (endDate) params.endDate = endDate;
             if (species) params.species = species;
@@ -43,7 +49,13 @@ export default function HeatmapPage() {
 
             const res = await api.get("/analytics/heatmap", { params });
             setHeatmapData(res.data);
-            toast.success(`Loaded ${res.data.count} data points`);
+            
+            // Display aggregation info if available
+            if (res.data.aggregated) {
+                toast.success(`Loaded ${res.data.count} reports aggregated into ${res.data.gridCount} grid cells (${res.data.precision}° precision)`);
+            } else {
+                toast.success(`Loaded ${res.data.count} data points`);
+            }
         } catch {
             toast.error("Failed to load heatmap data");
         } finally {
@@ -60,6 +72,16 @@ export default function HeatmapPage() {
         setEndDate("");
         setSpecies("");
         setRiskLevel("");
+    };
+
+    const handleZoomChange = (zoom: number) => {
+        if (zoom !== currentZoom) {
+            setCurrentZoom(zoom);
+            // Auto-reload data when zoom changes to get appropriate aggregation
+            loadHeatmap(zoom);
+        }
+    };
+        }
     };
 
     return (
@@ -112,13 +134,21 @@ export default function HeatmapPage() {
                             </div>
 
                             <div style={{ marginTop: 12, padding: 8, background: "#f3f4f6", borderRadius: 4, fontSize: 11, color: "#6b7280", textAlign: "center" }}>
-                                {heatmapData.count} data points
+                                {heatmapData.aggregated ? (
+                                    <>
+                                        <div>{heatmapData.count} reports</div>
+                                        <div>{heatmapData.gridCount} grid cells</div>
+                                        <div>{heatmapData.precision}° precision</div>
+                                    </>
+                                ) : (
+                                    <div>{heatmapData.count} data points</div>
+                                )}
                             </div>
                         </div>
 
                         {/* Map Container */}
                         <div style={{ width: "100%", height: "100%" }}>
-                            <HeatmapMap points={heatmapData.data} />
+                            <HeatmapMap points={heatmapData.data} onZoomChange={handleZoomChange} />
                         </div>
                     </div>
                 </div>
