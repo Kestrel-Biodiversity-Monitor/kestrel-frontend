@@ -266,7 +266,7 @@ export default function HeatmapPage() {
 
               <div style={{ display: "flex", gap: 8 }}>
                 <button
-                  onClick={loadHeatmap}
+                  onClick={() => loadHeatmap()}
                   disabled={loading}
                   className="btn btn-primary btn-sm"
                   style={{ flex: 1, fontSize: 12, padding: "6px 10px" }}
