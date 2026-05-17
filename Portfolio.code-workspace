@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../Full_Stack/Portfolio"
+		},
+		{
+			"path": "../kestrel-backend"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

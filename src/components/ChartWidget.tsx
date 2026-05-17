@@ -17,7 +17,7 @@ ChartJS.register(
 /**
  * Props defining the configuration for the ChartWidget component.
  */
-interface Props {.  
+interface Props {
     /** The type of chart to display: "bar", "line", or "doughnut". */
     type: "bar" | "line" | "doughnut";
     /** Array of string labels for the X-axis (or sections of the doughnut). */

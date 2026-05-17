@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -224,8 +224,8 @@ export default function AlertsPage() {
                                     </thead>
                                     <tbody>
                                         {alerts.map((a) => (
-                                            <>
-                                                <tr key={a._id} onClick={() => setExpandedId(expandedId === a._id ? null : a._id)} style={{ cursor: "pointer" }}>
+                                            <React.Fragment key={a._id}>
+                                                <tr onClick={() => setExpandedId(expandedId === a._id ? null : a._id)} style={{ cursor: "pointer" }}>
                                                     <td>
                                                         <div style={{ fontWeight: 600, color: "#111827", fontSize: 13 }}>{a.message.slice(0, 80)}{a.message.length > 80 ? "…" : ""}</div>
                                                         <div style={{ color: "#9ca3af", fontSize: 11, marginTop: 2 }}>{a.feedbacks.length} feedback(s) · click to expand</div>
@@ -293,7 +293,7 @@ export default function AlertsPage() {
                                                         </td>
                                                     </tr>
                                                 )}
-                                            </>
+                                            </React.Fragment>
                                         ))}
                                     </tbody>
                                 </table>
