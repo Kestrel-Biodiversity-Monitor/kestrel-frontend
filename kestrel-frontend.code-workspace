@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "kestrel-frontend"
+		},
+		{
+			"path": "kestrel-backend"
+		}
+	],
+	"settings": {}
+}
